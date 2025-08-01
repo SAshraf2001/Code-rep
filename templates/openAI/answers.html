@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    #answer-segment {
+        margin-top: 20px;
+    }
+
+    .bot-response {
+        background-color: #f1f3f5;
+        padding: 12px;
+        border-radius: 15px;
+        margin-bottom: 10px;
+        max-width: 75%;
+        margin-right: auto;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        position: relative;
+    }
+
+    .bot-response .copy-btn {
+        position: absolute;
+        top: 8px;
+        right: 12px;
+        border: none;
+        background: transparent;
+        font-size: 14px;
+        color: #6c757d;
+        cursor: pointer;
+    }
+
+    .bot-response .copy-btn:hover {
+        color: #000;
+    }
+
+    .loading {
+        font-style: italic;
+        color: #888;
+    }
+</style>
+
+<div id="answer-segment">
+    {% if answer %}
+        <div class="user-message">
+            <strong>You:</strong> {{ message }}
+        </div>
+        <div class="bot-response">
+            <button class="copy-btn my-3" onclick="copyAnswer(this)">Copy</button>
+            <strong>Gemini:</strong> {{ answer }}
+        </div>
+    {% else %}
+        <div class="bot-response">
+            <strong>Gemini:</strong> Welcome! Ask your question above.
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function copyAnswer(button) {
+    const text = button.parentElement.innerText.replace("Copy", "").trim();
+    navigator.clipboard.writeText(text).then(() => {
+        alert("Answer copied to clipboard!");
+    });
+}
+</script>
+{% endblock content %}

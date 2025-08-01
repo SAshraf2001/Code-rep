@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Home | OpenAI Project{% endblock %}
+
+{% block content %}
+<div class="text-center mb-5">
+  <h1 class="display-4">Welcome to the OpenAI Project</h1>
+  <p class="lead">Experience the power of AI right in your browser.</p>
+</div>
+
+<div class="row text-center">
+  <div class="col-md-4 mb-4">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h5 class="card-title">Chat Interface</h5>
+        <p class="card-text">Talk with an AI assistant using natural language.</p>
+        <a href="/chat/" class="btn btn-primary">Try Now</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4 mb-4">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h5 class="card-title">Text Generator</h5>
+        <p class="card-text">Generate creative text, summaries, or ideas.</p>
+        <a href="#" class="btn btn-success">Generate</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4 mb-4">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h5 class="card-title">Code Helper</h5>
+        <p class="card-text">Get help with code, debugging, and explanations.</p>
+        <a href="#" class="btn btn-dark">Start Coding</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

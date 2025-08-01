@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+ {% block title %}Chat | OPENAI{% endblock title %} 
+
+ {%block content %}
+<style>
+  #chat-box {
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: 10px;
+  }
+  .user-message {
+    background-color: #007bff;
+    color: white;
+    padding: 12px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    max-width: 75%;
+    margin-left: auto;
+  }
+  .bot-response {
+    background-color: #f8f9fa;
+    padding: 12px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    max-width: 75%;
+    margin-right: auto;
+  }
+  .input-group input {
+    border-top-left-radius: 25px;
+    border-bottom-left-radius: 25px;
+  }
+  .input-group button {
+    border-top-right-radius: 25px;
+    border-bottom-right-radius: 25px;
+  }
+</style>
+
+<div class="container my-5">
+  <h2 class="text-center mb-4">Welcome to ChatGPT</h2>
+  {% if user.is_authenticated %}
+
+  <div class="card shadow-lg p-4">
+    <div id="chat-box" class="mb-3">
+      <!-- Example messages -->
+      <div class="user-message"><strong>You:</strong> Hello, ChatGPT!</div>
+      <div class="bot-response">
+        <strong>ChatGPT:</strong> Hello! How can I assist you today?
+      </div>
+      <!-- End example -->
+    </div>
+    <form method="POST" action="/ans/">
+      {% csrf_token %}
+      <div class="input-group">
+        <input
+          type="text"
+          name="message"
+          id="message"
+          class="form-control"
+          placeholder="Type your message..."
+        />
+        <button class="btn btn-success" type="submit">Send</button>
+      </div>
+    </form>
+    {% else %}
+    <div
+      style="
+        background-color: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeeba;
+        padding: 15px;
+        border-radius: 8px;
+        max-width: 400px;
+        margin: 20px auto;
+        text-align: center;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      "
+    >
+      <strong>Access Restricted</strong><br />
+      You need to
+      <a href="/signin/" style="color: #0d6efd; text-decoration: none"
+        >log in</a
+      >
+      first to use the chat.
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock content %}
