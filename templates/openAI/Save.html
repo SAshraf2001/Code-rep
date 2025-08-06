@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Save Location{% endblock %}
+
+{% block content %}
+<style>
+    .location-container {
+        max-width: 500px;
+        margin: 50px auto;
+        padding: 30px;
+        background-color: #f4f4f4;
+        border-radius: 10px;
+        box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        text-align: center;
+        font-family: Arial, sans-serif;
+    }
+
+    .location-container h2 {
+        margin-bottom: 20px;
+    }
+
+    .location-container button {
+        padding: 10px 20px;
+        font-size: 15px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .location-container p {
+        margin-top: 20px;
+        font-size: 14px;
+    }
+</style>
+
+<!-- CSRF token included in meta tag -->
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+<div class="location-container">
+    <h2>Save My Location</h2>
+    <button onclick="sendLocation()">Send My Location</button>
+    <p id="response"></p>
+    <h3> Location </h3>
+    <p><strong>Latitude:</strong> <span id="latitude"></span></p>
+    <p><strong>Longitude:</strong> <span id="longitude"></span></p>
+
+</div>
+
+<script>
+function sendLocation() {
+    const responseEl = document.getElementById('response');
+    responseEl.textContent = 'Fetching location...';
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            fetch('/save-location/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                    responseEl.textContent = data.message;
+                    document.getElementById('latitude').textContent = position.coords.latitude;
+                    document.getElementById('longitude').textContent = position.coords.longitude;
+                })
+            .catch(error => {
+                responseEl.textContent = 'Error: ' + error;
+            });
+        }, function(error) {
+            responseEl.textContent = 'Geolocation error: ' + error.message;
+        });
+    } else {
+        responseEl.textContent = 'Geolocation is not supported by this browser.';
+    }
+}
+</script>
+{% endblock %}

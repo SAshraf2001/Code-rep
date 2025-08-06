@@ -3,11 +3,12 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
 from django.contrib import messages
 import google.generativeai as genai
-
+import json
+from django.http import JsonResponse
+from .models import Location
+from django.contrib.auth.decorators import login_required
 
 genai.configure(api_key="AIzaSyCvOuatvoVCOpQF_kWuBD9ALqKjR3FaMEw")
-
-
 
 # Home Page
 def index(request):
@@ -18,15 +19,13 @@ def loggedIn(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
-
         myuser = authenticate(username=username, password=password)
-
         if myuser is not None:
             login(request, myuser)
             messages.success(request, 'The account has been logged in successfully.')
+            return redirect('/')  # Redirect after login
         else:
             messages.error(request, 'Invalid credentials. Please try again.')
-
     return render(request, 'openAI/signin.html')
 
 # Sign Up
@@ -55,7 +54,6 @@ def signup(request):
         myuser.first_name = firstName
         myuser.last_name = lastName
         myuser.save()
-
         messages.success(request, 'The account has been created successfully.')
         return redirect('/signin')
 
@@ -67,24 +65,45 @@ def loggedOut(request):
     messages.success(request, 'The account has been logged out.')
     return redirect('/')
 
-
-
-# Chat with OpenAI (new SDK structure)
+# Chat
 def chatI(request):
     question = request.POST.get('message')
-
-    if not question:  # None or empty
+    if not question:
         return render(request, 'openAI/answers.html', {'answer': 'No question provided.'})
 
-    # Gemini equivalent of completion
-    model = genai.GenerativeModel("gemini-1.5-flash")  # or gemini-1.5-pro
+    model = genai.GenerativeModel("gemini-1.5-flash")
     response = model.generate_content(question)
-
-    # Gemini response text
     text = response.text
+    return render(request, 'openAI/answers.html', {'answer': text})
 
-    responses = {
-        'answer': text,
-    }
 
-    return render(request, 'openAI/answers.html', responses)
+@login_required
+def save_location(request):
+    print("Request method:", request.method)
+
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        latitude = data.get('latitude')
+        longitude = data.get('longitude')
+
+        if latitude is None or longitude is None:
+            return JsonResponse({'status': 'error', 'message': 'Incomplete location data'}, status=400)
+
+        Location.objects.update_or_create(
+            getUser=request.user,
+            defaults={'getLatitude': latitude, 'getLongitude': longitude}
+        )
+
+        return JsonResponse({'status': 'success', 'message': 'Location saved successfully'})
+
+    except json.JSONDecodeError as e:
+        return JsonResponse({'status': 'error', 'message': 'Invalid JSON: ' + str(e)}, status=400)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    
+
+def show_safe_location(request):
+    return render(request, 'openAI/Save.html')

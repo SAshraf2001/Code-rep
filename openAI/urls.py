@@ -7,5 +7,6 @@ urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('logout/', views.loggedOut, name='loggedOut'),
     path('ans/', views.chatI, name='chatI'),
-    # path('ans/', views.answers, name='answers')
+    path('save/', views.show_safe_location, name='show_safe_location'),
+    path('save-location/', views.save_location, name='save_location')
 ]
